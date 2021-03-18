@@ -1,32 +1,30 @@
-﻿"""
- * Copyright 2020, Departamento de sistemas y Computación, Universidad
- * de Los Andes
- *
- *
- * Desarrolado para el curso ISIS1225 - Estructuras de Datos y Algoritmos
- *
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
- """
-
-import config as cf
+﻿import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+sys.setrecursionlimit(1000000)
+class text:
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    RED = '\033[91m'
+    BLUE = '\033[34m'
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    END = '\033[0m'
 
+def printMenu():
+    print(text.CYAN + "\nBienvenido" + text.END)
+    print(text.BLUE + "1- Cargar información en el catálogo.")
+    #print("2- Consultar los n videos con más views en tendencia por país.")
+    #print("3- Consultar el video que más días ha sido tendencia por país.")
+    #print("4- Consultar el video que más días ha sido tendencia por categoría.")
+    print("5- Consultar los n videos con más likes con un tag específico.")
+    print("0- Salir."+ text.END)
 
+<<<<<<< HEAD
 sys.setrecursionlimit(1000000)
 class text:
     BOLD = '\033[1m'
@@ -105,6 +103,65 @@ def printDiasCat(video, cat):
     text.YELLOW + text.UNDERLINE + 'Categoría:' + text.END, video[0]['category_id'],
     text.YELLOW + text.UNDERLINE + 'Número de días en tendencia:' + text.END, video[1], '\n')
 
+=======
+def iniciarC():
+    return controller.iniciarC()
+
+def loadData(catalog):
+    controller.loadData(catalog)
+
+def printTendPais(videos, n, pais):
+    if lt.size(videos) != 0:
+        if lt.size(videos) >= n:
+            print('\nLos', str(n), 'videos con mas visitas de', str(pais).capitalize(), 'son: ')
+            i = 1
+            while i < (n + 1):
+                video =  lt.getElement(videos, i)
+                print(text.UNDERLINE + text.YELLOW + str(i) + '.',
+                'Fecha en tendencia:' + text.END, video['trending_date'],
+                text.YELLOW + text.UNDERLINE + 'Título:' + text.END, video['title'],
+                text.YELLOW + text.UNDERLINE + 'Canal:' + text.END, video['channel_title'],
+                text.YELLOW + text.UNDERLINE + 'Hora de publicación:' + text.END, video['publish_time'],
+                text.YELLOW + text.UNDERLINE + 'Visitas:' + text.END, video['views'],
+                text.YELLOW + text.UNDERLINE + 'Likes:' + text.END, video['likes'],
+                text.YELLOW + text.UNDERLINE + 'Dislikes:' + text.END, video['dislikes'], '\n')
+                
+                i +=1
+        else:
+            print('\n', text.RED, 'Solo hay', str(n), 'videos que cumplen con los criterios de búsqueda: ',
+            text.END)
+            i = 1
+            while i < (lt.size(videos) + 1):
+                video =  lt.getElement(videos, i)
+                print(text.UNDERLINE + text.YELLOW + str(i) + '.',
+                'Fecha en tendencia:' + text.END, video['trending_date'],
+                text.YELLOW + text.UNDERLINE + 'Título:' + text.END, video['title'],
+                text.YELLOW + text.UNDERLINE + 'Canal:' + text.END, video['channel_title'],
+                text.YELLOW + text.UNDERLINE + 'Hora de publicación:' + text.END, video['publish_time'],
+                text.YELLOW + text.UNDERLINE + 'Visitas:' + text.END, video['views'],
+                text.YELLOW + text.UNDERLINE + 'Likes:' + text.END, video['likes'],
+                text.YELLOW + text.UNDERLINE + 'Dislikes:' + text.END, video['dislikes'], '\n')
+                    
+                i +=1
+    else:
+        print('\n', text.RED, 'No hay videos que cumplan con los criterios de búsqueda.\n', text.END)
+        sys.exit()
+
+def printDiasPais(video, pais):
+    print('\nEl video con más días en tendencia en el país', pais, 'es: ')
+    print(text.YELLOW + text.UNDERLINE + 'Título:' + text.END, video['title'],
+    text.YELLOW + text.UNDERLINE + 'Canal:' + text.END, video['channel_title'],
+    text.YELLOW + text.UNDERLINE + 'Categoría:' + text.END, video['category_id'],
+    text.YELLOW + text.UNDERLINE + 'Número de días en tendencia:' + text.END, video[1], '\n')
+
+def printDiasCat(video, cat):
+    print('\nEl video con más días en tendencia en la categoría', cat, 'es: ')
+    print(text.YELLOW + text.UNDERLINE + 'Título:' + text.END, video[0]['title'],
+    text.YELLOW + text.UNDERLINE + 'Canal:' + text.END, video[0]['channel_title'],
+    text.YELLOW + text.UNDERLINE + 'Categoría:' + text.END, video[0]['category_id'],
+    text.YELLOW + text.UNDERLINE + 'Número de días en tendencia:' + text.END, video[1], '\n')
+
+>>>>>>> 358e1759548b7a9665ff0964d190aac2016e922f
 def printLikesTag(videos, tag):
     n = 3
     if lt.size(videos) != 0:
