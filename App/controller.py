@@ -1,4 +1,5 @@
-﻿import config as cf
+﻿
+import config as cf
 import model
 import csv
 

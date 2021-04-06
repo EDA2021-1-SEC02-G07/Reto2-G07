@@ -129,9 +129,9 @@ def addVideoCanal(catalog, nomcanal, video):
 
 def addCat(catalog, categoria):
     #actualiza una categoria a la tabla de categorias de catlogo
-    newCat = newCat(categoria['tag_name'], tag['tag_id'])
-    mp.put(catalogo['categorias'], tag['tag_name'], newCat)
-    mp.put (catalogo['cat_vid'],tag['tag_id'], newCat)
+    newCat = nuevoCatVideo(categoria['name'], categoria['id'])
+    mp.put(catalog['categorias'], categoria['name'], newCat)
+    #mp.put (catalog['categorias'],categoria['id'], newCat)
 
 def addVideoCat(catalog, categoria):
     videoid = categoria['video_id']
