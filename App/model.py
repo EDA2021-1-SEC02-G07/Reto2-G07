@@ -17,31 +17,31 @@ def NCatalogo():
     #añade los videos a una singlelinked
     catalogo['videos'] = lt.newList('SINGLE_LINKED', cmpV_id)
     #map, llave = id video
-    catalogo['videosIds'] = mp.newMap (375918, 
+    catalogo['videosIds'] = mp.newMap ( 
                                         maptype='CHAINING',
                                         loadfactor=4.0,  )
     
     #map llave= canal que subio el video
-    catalogo['canales'] = mp.newMap(375918, maptype='CHAINING',
+    catalogo['canales'] = mp.newMap( maptype='CHAINING',
                                     loadfactor=4.0,
                                     comparefunction=compararCanalPorNombre)
    
 
 
     #map llave es la categoria
-    catalogo['categorias'] = mp.newMap(5638770,
+    catalogo['categorias'] = mp.newMap(
                                    maptype='PROBING',
                                    loadfactor=0.5,
                                    comparefunction= compararCatNombre)
 
     #map llave = id de la categoria
-    catalogo['catIds'] = mp.newMap(5638770,
+    catalogo['catIds'] = mp.newMap(
                                   maptype='CHAINING',
                                   loadfactor=4.0,
                                   comparefunction=compararCatIds)
     
     #map llave= pais
-    catalogo['paises'] = mp.newMap(10,
+    catalogo['paises'] = mp.newMap(
                                    maptype='PROBING',
                                    loadfactor=0.5,
                                    comparefunction = compararMapPais)
