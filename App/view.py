@@ -153,7 +153,9 @@ while True:
         print('Titulo: ' + video['title'] + ', Canal: ' + video['channel_title'] + ', Trending date: ' + \
              video['trending_date'] + ', País :' + video['country'] + ', Vistas :'+ video['views'] +\
                   ', Likes :' + video['likes'] + ', Dislikes :' + video['dislikes'])
-        
+        cont = controller.iniciarC()
+        answer = controller.loadData(cont)
+        print('Tiempo [ms]: ', f'{answer[0]:.3f}', '||', 'Memoria [Kb]: ', f'{answer[1]:.3f}')
         
         print( text.UNDERLINE + text.BOLD + 'Categorías cargadas:' + text.END + ' '+  str(lt.size(catalog['categorias'])), '\n')
         #print(catalog['categorias']['elements'])
