@@ -1,240 +1,185 @@
-﻿from DISClib.DataStructures.arraylist import getElement, isPresent
+﻿import time 
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+import DISClib.DataStructures.listiterator as it
 from DISClib.DataStructures import mapentry as me
+from DISClib.Algorithms.Sorting import quicksort as quick
 assert cf
 
 # Construccion de modelos
 def NCatalogo():
-    catalogo = {'videos': None,
-            'videosIds': None,
-            'canales': None,
-            'categorias': None,
-            'catIds': None,
-            'paises': None}
+    catalogo = {'videos': None, 'videosID': None, 'categorias': None, 'catIds': None, 'paises': None}
 
-    #añade los videos a una singlelinked
-    catalogo['videos'] = lt.newList('SINGLE_LINKED', cmpV_id)
-    #map, llave = id video
-    catalogo['videosIds'] = mp.newMap ( 
-                                        maptype='CHAINING',
-                                        loadfactor=4.0,  )
-    
-    #map llave= canal que subio el video
-    catalogo['canales'] = mp.newMap( maptype='CHAINING',
-                                    loadfactor=4.0,
-                                    comparefunction=compararCanalPorNombre)
-   
-
-
-    #map llave es la categoria
-    catalogo['categorias'] = mp.newMap(
-                                   maptype='PROBING',
-                                   loadfactor=0.5,
-                                   comparefunction= compararCatNombre)
-
-    #map llave = id de la categoria
-    catalogo['catIds'] = mp.newMap(
-                                  maptype='CHAINING',
-                                  loadfactor=4.0,
-                                  comparefunction=compararCatIds)
-    
-    #map llave= pais
-    catalogo['paises'] = mp.newMap(
-                                   maptype='PROBING',
-                                   loadfactor=0.5,
-                                   comparefunction = compararMapPais)
-    
-    
-    
-    
+    catalogo['videos'] = lt.newList('ARRAY_LIST', cmpfunction=cmpSTR)
+    #Llave es el ID del video
+    catalogo['videosID'] = mp.newMap(688411, maptype='PROBING', loadfactor=0.693, comparefunction = cmpSTR)
+    #Llave es el nombre de la categoría
+    catalogo['categorias'] = mp.newMap(37, maptype='PROBING', loadfactor=0.693, comparefunction= cmpSTR)
+    #Llave es el ID de la categoría
+    catalogo['catIDs'] = mp.newMap(37, maptype='PROBING', loadfactor=0.693, comparefunction=cmpINT)
+    #Llave es el nombre del país
+    catalogo['paises'] = mp.newMap(337, maptype='PROBING', loadfactor=0.693, comparefunction = cmpSTR)
+    #Llave es la ID de la categoría
+    catalogo['catVid'] = mp.newMap(37, maptype='PROBING', loadfactor=0.693, comparefunction=cmpINT)
     return catalogo
 
 # ==============================
 # Funciones para creación de datos
 # ==============================
-def nuevoCanal(name):
-    #se guarda en una lista los videos del canal
-    canal = {'name': "",
-             'videos': None}
-    canal['name'] = name
-    canal['videos'] = lt.newList('SINGLE_LINKED', compararCanalPorNombre)
-    return canal
-
-
 def nuevoCatVideo(name, id):
     #relación entre un tag y los videos con el tag
     #tiene un total de videos con ese tag
-    #crea una lista con los libros
-
-    cat = {'name': '',
-           'tag_id': '',
-           'total_videos': 0,
-           'videos': None,
-           'count': 0.0}
+    #crea una lista con los videos
+    cat = {'id': '', 'name': '', 'videos': None}
     cat['name'] = name
-    cat['tag_id'] = id
-    cat['books'] = lt.newList()
+    cat['id'] = id
+    cat['videos'] = lt.newList('SINGLE_LINKED', cmpfunction=cmpSTR)
     return cat
 
 def nuevoPais(name):
     #crea una lista con los videos por pais
     pais = {'name':'', 'videos':None}
     pais['name'] = name
-    pais['videos'] =lt.newList()
+    pais['videos'] = lt.newList('SINGLE_LINKED', cmpSTR)
+    return pais
 
 # ==============================
 # Funciones para agregar info al catalogo
 # ==============================
-def addV(catalog, video):
+def addVid(catalog, video):
     #agrega un video a la lista de videos
     #también guarda el video en un map, usa el id para eso
     #se agrega en los canales una referencia al video
     #crea una entrada en el map de paises
+    
     lt.addLast(catalog['videos'], video)
-    mp.put(catalog['videosIds'], video['video_id'], video)
-    canal = video['channel_title']
-
-    addVideoCanal(catalog, canal, video)
+    '''if video['video_id'] != '#NAME?':
+        mp.put(catalog['videosID'], video['video_id'], video)
     addVideoPais(catalog, video)
+    addVideoCat(catalog, video)'''
+    
+    
 
+def loadMaps(catalog):
+    orden = sortVideos(catalog['videos'], cmpViewsReverse, quick)
+    iterator = it.newIterator(orden)
+    while it.hasNext(iterator):
+        x = it.next(iterator)
+        if x['video_id'] != '#NAME?':
+            mp.put(catalog['videosID'], x['video_id'], x)
+            addVideoPais(catalog, x)
+            addVideoCat(catalog, x)
 
 def addVideoPais(catalog, video):
     #agrega un pais a la lista de paises
     paises = catalog['paises']
-    pais = video['country']
+    pais = video['country'].lower().strip()
     if mp.contains(paises, pais):
-        entry = mp.get(paises, pais)
-        paisf = me.getValue(entry)
+        paisf = me.getValue(mp.get(paises, pais))
     else:
         paisf = nuevoPais(pais)
-        mp.put(paises, pais, video)
+        mp.put(paises, pais, paisf)
     
-        
-
-def addVideoCanal(catalog, nomcanal, video):
-    #agrega un video a la lista de un canal
-    channel = catalog['canales']
-    existcanal = mp.contains(channel, nomcanal )
-    if existcanal:
-        entry = mp.get(channel, nomcanal)
-        canall = me.getValue(entry)
-    else:
-        canall = nuevoCanal(nomcanal)
-        mp.put(channel, nomcanal, canall)
-    
-    lt.addLast(canall['videos'], video)
-
-
-def addCat(catalog, categoria):
+    lt.addLast(paisf['videos'], video['video_id'])
+ 
+def addCat(catalog, cat):
     #actualiza una categoria a la tabla de categorias de catlogo
-    newCat = nuevoCatVideo(categoria['name'], categoria['id'])
-    mp.put(catalog['categorias'], categoria['name'], newCat)
-    #mp.put (catalog['categorias'],categoria['id'], newCat)
+    newC = nuevoCatVideo(cat['name'].lower().strip(), cat['id'])
+    mp.put(catalog['categorias'], cat['name'].lower().strip(), cat['id'])
+    mp.put(catalog['catIDs'], cat['id'], cat['name'].lower().strip())
+    mp.put(catalog['catVid'], cat['id'], newC)
 
-def addVideoCat(catalog, categoria):
-    videoid = categoria['video_id']
-    catid = tag['tag_id']
-    entry = mg.get(catalog['catIds'], catid)
-    if entry:
-        tagvideo = mp.get(catalog['categorias'], me.getValue(entry)['name'])
-        tagvideo['value']['total_books'] += 1
-        tagvideo['value']['count'] += int(tag['count'])
-        video = mp.get(catalog['videosIds'], videoid)
-        if video:
-            lt.addLast(tagvideo['value']['books'], video['value'])
+def addVideoCat(catalog, video):
+    catIDs = catalog['catIDs']
+    catVid = catalog['catVid']
+    cat = video['category_id']
+    name = me.getKey(mp.get(catIDs, cat))
+    if mp.contains(catVid, cat):
+        catf = me.getValue(mp.get(catVid, cat))
+    else:
+        catf = nuevoCatVideo(name ,cat)
+        mp.put(catVid, cat, catf)
 
+    lt.addLast(catf['videos'], video['video_id'])
 
 # ==============================
 # Funciones de consulta
 # ==============================
+def TendPais(catalogo, pais, cat):
+    pais = pais.lower()
+    cat = cat.lower()
+    paises = catalogo['paises']
+    catVid = catalogo['catVid']
+    catID = me.getValue(mp.get(catalogo['categorias'], cat))
+    Lpais = me.getValue(mp.get(paises, pais))['videos']
+    Lcat = me.getValue(mp.get(catVid, catID))['videos']
+    pIDs = []
+    cIDs = []
+    vidIDs = lt.newList('ARRAY_LIST', cmpfunction=cmpSTR)
 
-def getVideosPorCanal(catalog, nomcanal):
-    canal = mp.get(catalog['canales'], nomcanal)
-    if canal:
-        return me.getValue(canal)
-    return None
+    iterator = it.newIterator(Lpais)
+    while it.hasNext(iterator):
+        x = it.next(iterator)
+        pIDs.append(x)
 
-def getVideosPorCat(catalog, nomcat):
-    cat = mp.get(catalog['categorias'], nomcat)
-    videos = None
-    if cat:
-        videos = me.getValue(cat)['videos']
-    return books
+    iterator = it.newIterator(Lcat)
+    while it.hasNext(iterator):
+        x = it.next(iterator)
+        cIDs.append(x)
 
-def getVideosPorPais(catalog, pais):
-    pais = mp.get(catalog['paises'], pais)
-    if pais:
-        return me.getValue(pais)['videos']
-    return None
-
-def videosSize(catalog):
+    if len(pIDs) < len(cIDs):
+        inter = list(set(pIDs).intersection(cIDs))
+    else:
+        inter = list(set(cIDs).intersection(pIDs))
     
-    return lt.size(catalog['videos'])
+    for x in inter:
+        lt.addLast(vidIDs, me.getValue(mp.get(catalogo['videosID'], x)))
+    orden = sortVideos(vidIDs, cmpViews, quick)
+    return orden
 
-def canalesSize(catalog):
-    """
-    Numero de autores en el catalogo
-    """
-    return mp.size(catalog['canales'])
-
-
-def tagsSize(catalog):
-    """
-    Numero de tags en el catalogo
-    """
-    return mp.size(catalog['tags'])
-
-
+def DiasPais(catalogo, pais):
+    pais = pais.lower().strip()
+    paises = catalogo['paises']
+    vidP = me.getValue(mp.get(paises, pais))['videos']
+    iterator = it.newIterator(vidP)
+    maxdict = {}
+    while it.hasNext(iterator):
+        x = it.next(iterator)
+        if x in maxdict:
+            maxdict[x] +=1
+        else:
+            maxdict[x] = 1
+    keys = list(maxdict.keys())
+    values = list(maxdict.values())
+    maxV = values.index(max(values))
+    topD = keys[maxV]
+    dTop = values[maxV]
+    video = me.getValue(mp.get(catalogo['videosID'], topD))
+    
+    return video, dTop 
 
 # ==============================
 # Funciones de Comparacion
 # ==============================
+def cmpViews(v1, v2):
+    result = float(v1['views']) > float(v2['views'])
+    return result
 
-def cmpV_id(ide_1, id_2):
-    #compara ids de dos videos
-    if (id1 == id2):
+def cmpViewsReverse(v1, v2):
+    result = float(v1['views']) < float(v2['views'])
+    return result
+
+def cmpSTR(name, cat): 
+    entry = me.getKey(cat)
+    if (name == entry):
         return 0
-    elif id1 > id2:
-        return 1
-    else:
-        return -1    
-
-
-
-def compararMapVideoIds( id, entrada):
-    # compara ids de videos, id = indentificador, 
-    #entrada = pareja llave-valor
-    identry = me.getKey(entrada)
-    if (int(id) == int(identry)):
-        return 0
-    elif (int(id) > int(identry)):
+    elif (name > entry):
         return 1
     else:
         return -1
 
-def compararCanalPorNombre(keyname, canal):
-    authentry = me.getKey(canal)
-    if (keyname == authentry):
-        return 0
-    elif (keyname > authentry):
-        return 1
-    else:
-        return -1
-
-def compararCatNombre(name, categoria):
-    
-    tagentry = me.getKey(categoria)
-    if (name == tagentry):
-        return 0
-    elif (name > tagentry):
-        return 1
-    else:
-        return -1
-
-
-def compararCatIds(id, categoria):
+def cmpINT(id, categoria):
     tagentry = me.getKey(categoria)
     if (int(id) == int(tagentry)):
         return 0
@@ -243,12 +188,21 @@ def compararCatIds(id, categoria):
     else:
         return 0
 
-def compararMapPais(id, tag):
-    tagentry = me.getKey(tag)
-    if (id == tagentry):
-        return 0
-    elif (id > tagentry):
-        return 1
-    else:
-        return 0
+
+# ==============================
+# Funciones de ordenamiento
+# ==============================
+def sortVideos(lista, cmp_f, orde):
+    lista = lista.copy()
+    orde.sort(lista, cmp_f)
+    return lista
+
+# ==============================
+# DEBUG
+# ==============================
+def debug(catalog):
+    #print(me.getValue(mp.get(catalog['videosID'], 'rK9L7t0Pl-E')))
+    print(catalog['videosID'])
+
+ 
 
