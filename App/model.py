@@ -22,7 +22,9 @@ def NCatalogo():
     catalogo['paises'] = mp.newMap(337, maptype='PROBING', loadfactor=0.693, comparefunction = cmpSTR)
     #Llave es la ID de la categoría
     catalogo['catVid'] = mp.newMap(37, maptype='PROBING', loadfactor=0.693, comparefunction=cmpINT)
+
     return catalogo
+
 
 # ==============================
 # Funciones para creación de datos
@@ -158,6 +160,50 @@ def DiasPais(catalogo, pais):
     video = me.getValue(mp.get(catalogo['videosID'], topD))
     
     return video, dTop 
+
+
+
+
+def DiasCat(catalogo, category_name):
+    #num de categoria
+    category_name = category_name.lower()
+    categoria = mp.get(catalogo['categorias'], category_name)
+    num = categoria['value']
+    # map con videos por categoria
+    vid = mp.get(catalogo['catVid'], num)
+    
+    final = {}
+    maxi = 0
+    fin = None
+    if vid:
+        #obtiene videos
+        categorias = me.getValue(vid)['videos']
+        iterator = it.newIterator(categorias)
+        
+        #recorrido
+        while it.hasNext(iterator):
+            x = it.next(iterator)
+            if x in final:
+                final[x]+=1
+            
+            else:
+                final[x]=1
+
+            if final[x]> maxi:
+                maxi = final[x]
+                fin = x
+
+    print(fin, maxi)
+
+
+
+
+
+
+    
+    
+
+    return None
 
 # ==============================
 # Funciones de Comparacion

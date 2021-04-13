@@ -3,6 +3,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 assert cf
+from DISClib.ADT import map as mp
 sys.setrecursionlimit(1000000)
 class text:
     BOLD = '\033[1m'
@@ -85,6 +86,8 @@ while True:
         
         print( text.UNDERLINE + text.BOLD + 'Categorías cargadas:' + text.END + ' '+  str(lt.size(catalog['categorias'])), '\n')
         #print(catalog['categorias']['elements'])
+        
+
 
     elif int(inputs[0]) == 2:
         n = int(input('\n' + text.GREEN + "Escriba el número de los top videos que desea consultar: " + text.END))
@@ -111,7 +114,8 @@ while True:
         
     elif int(inputs[0]) == 4:
         c = input(text.GREEN + "\nEscriba la categoría que desea consultar: " + text.END)
-        pos = lt.isPresent(catalog['categorias'], c)
+        pos = mp.contains(catalog['categorias'], c)
+        
         if pos != 0: 
             print(text.PURPLE, '\nCargando datos...\n', text.END)
             video = controller.getDiasCat(catalog, c)

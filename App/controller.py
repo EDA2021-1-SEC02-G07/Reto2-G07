@@ -27,9 +27,11 @@ def loadCat(catalogo):
     for cat in input_file:
         model.addCat(catalogo, cat)
 
+    
+
 def loadV(catalogo):
     st = time.time()
-    videosfile = cf.data_dir + 'videos-large.csv'
+    videosfile = cf.data_dir + 'videos-10pct.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for videosfile in input_file:
         model.addVid(catalogo, videosfile)
