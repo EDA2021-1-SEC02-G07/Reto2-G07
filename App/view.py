@@ -22,7 +22,7 @@ def printMenu():
     print("2- Consultar los n videos con más views en tendencia por país.")
     print("3- Consultar el video que más días ha sido tendencia por país.")
     print("4- Consultar el video que más días ha sido tendencia por categoría.")
-    print("5- Consultar los n videos con más likes con un tag específico.")
+    print("5- Consultar los n videos con más likes de un país específico.")
     print("0- Salir."+ text.END)
 
 def iniciarC():
@@ -117,7 +117,8 @@ while True:
         pos = mp.contains(catalog['categorias'], c)
         
         if pos != 0: 
-            print(text.PURPLE, '\nCargando datos...\n', text.END)
+            print(text.PURPLE, '\nCargando datos...\n', text.END)         
+            
             video = controller.getDiasCat(catalog, c)
             printDiasCat(video, c)
         else:
@@ -125,9 +126,11 @@ while True:
             sys.exit()
 
     elif int(inputs[0]) == 5:
-        t = input(text.GREEN + "\nEscriba el tag que desea consultar: " + text.END)
-        videos = controller.getLikesTag(catalog, t)
-        printLikesTag(videos, t)
+        p = (input(text.GREEN + "\nEscriba el pais que desea consultar: " + text.END)).lower()
+        n = int(input(text.GREEN + "\nEscriba el numero de videos que desea consultar: " + text.END))
+        tag = (input(text.GREEN + "\nEscriba el tag que desea consultar: " + text.END)).lower()
+        videos = controller.getLikesTag(catalog, p, n, tag)
+        #printLikesTag(videos, p)
 
     elif int(inputs[0]) == 6:
         controller.getdebug(catalog)

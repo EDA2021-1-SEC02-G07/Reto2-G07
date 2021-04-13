@@ -7,6 +7,17 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import quicksort as quick
 assert cf
 
+class text:
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    PURPLE = '\033[95m'
+    CYAN = '\033[96m'
+    RED = '\033[91m'
+    BLUE = '\033[34m'
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    END = '\033[0m'
+
 # Construccion de modelos
 def NCatalogo():
     catalogo = {'videos': None, 'videosID': None, 'categorias': None, 'catIds': None, 'paises': None}
@@ -192,18 +203,86 @@ def DiasCat(catalogo, category_name):
             if final[x]> maxi:
                 maxi = final[x]
                 fin = x
+    answer = mp.get(catalogo['videosID'], fin)
 
-    print(fin, maxi)
+    print(text.BOLD+ 'Title: '+ text.END,answer['value']['title'], text.BOLD+ 'Channel_title: '+ text.END , answer['value']['channel_title'], text.BOLD, 'Category_id: '+ text.END , answer['value']['category_id'],' ', text.BOLD+ 'Dias: '+ text.END, maxi )
+    print("               ")
 
 
+def LikesPais(catalogo, pais, numero, tag):
+    #sacar paises, sacar videos del pais
+    paises = catalogo['paises']
+    videos = me.getValue(mp.get(paises, pais))['videos']   
+    #iteracion, obitine diccionario con las views de los videos con el tag y el pais
+    iterator = it.newIterator(videos)
+    final = {}
+    lista = lt.newList()
+    while it.hasNext(iterator):
+        x = it.next(iterator)
+        answer = (mp.get(catalogo['videosID'], x))
+        tags = answer['value']['tags']
+       
+        if tag in tags:
+            likes = answer['value']['likes']
+            
+            if x in final and likes > final[x]:
+                final[x]=likes
+            else:
+                final[x]=likes
+    #recorre el diccionario y devuelve la lista con el numero de videos pedidos
+    lista= recorrerDic(final, numero)
+    
+    print(lista)
+    for i in lista:
+        
+        video = mp.get(catalogo['videosID'], i)
+        titulo = video['value']['title']
+        canal = video['value']['channel_title']
+        tiempo =video['value'] ['publish_time']
+       
+        views = video['value'] ['views']
+        likes= video['value'] ['likes']
+        dislikes = video['value']['dislikes']
+        tags = video['value']['tags']
+        print(text.BOLD+ 'Title: '+ text.END,titulo, '\n', text.BOLD+ 'Channel_title: '+ text.END , canal, text.BOLD, '\n','Publish_time: '+ text.END ,tiempo,'\n',text.BOLD+ 'Views: '+ text.END, views, '\n', text.BOLD+text.YELLOW+ 'Likes: '+ text.END,likes, '\n',text.BOLD+ 'Dislikes: '+ text.END, dislikes, '\n', text.BOLD+ 'Tags: '+ text.END, tags)
+         
+    
 
 
+def recorrerDic(diccionario, num):
+    #recorre el diccionario y selecciona el numero de videos en lista descendente por numero de likes
+    lista={}
+    while num>0:
+        num-=1
+        mayor = 0
+        va = ""
+        for i in diccionario:
+           
+            likes = diccionario[i]
+            
+            if int(likes) >int(mayor):
+                mayor = likes
+                va = i
+               
+        lista[va]=mayor
+            
+        if va in diccionario:
+            diccionario.pop(va) 
+        
+    return(lista)
 
+    
 
     
     
+    
+    
+    
+    
+    
+        
 
-    return None
+    
 
 # ==============================
 # Funciones de Comparacion

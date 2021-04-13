@@ -31,7 +31,7 @@ def loadCat(catalogo):
 
 def loadV(catalogo):
     st = time.time()
-    videosfile = cf.data_dir + 'videos-10pct.csv'
+    videosfile = cf.data_dir + 'videos-80pct.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for videosfile in input_file:
         model.addVid(catalogo, videosfile)
@@ -51,8 +51,8 @@ def getDiasPais(catalogo, pais):
 def getDiasCat(catalogo, categoria):
     return model.DiasCat(catalogo, categoria)
 
-def getLikesTag(catalogo, tag):
-    return model.LikesTag(catalogo, tag)
+def getLikesTag(catalogo, pais, numero, tag):
+    return model.LikesPais(catalogo, pais, numero, tag)
 
 #DEBUG
 def getdebug(catalog):
